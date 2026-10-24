@@ -71,10 +71,6 @@ namespace ApiStudent.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.HasKey("Email");
 
                     b.ToTable("Students");

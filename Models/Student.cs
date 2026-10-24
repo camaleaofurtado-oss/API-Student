@@ -10,9 +10,7 @@ public class Student
     [Required]
     public string Nome { get; set; }
     [Required]
-    public DateTime DataCadastro { get; set; }
-    [Required]
-    public string UserId { get; set; }
+    public DateTime DataCadastro { get; set; } = DateTime.UtcNow;
     public virtual ICollection<Enrollment> Enrollments { get; set; }
 
 }
