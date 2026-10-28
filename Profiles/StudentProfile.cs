@@ -1,5 +1,6 @@
 ﻿using ApiStudent.Models;
 using ApiStudent.Models.Dtos;
+using ApiStudent.Models.Dtos.StudentDto;
 using AutoMapper;
 
 namespace ApiStudent.Profiles;
@@ -10,6 +11,7 @@ public class StudentProfile : Profile
     {
         CreateMap<CreateStudentDto, Student>();
         CreateMap<Student, ReadStudentDto>();   
+        
     }
 
 }

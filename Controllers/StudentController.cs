@@ -1,6 +1,7 @@
 ﻿using ApiStudent.Data;
 using ApiStudent.Models;
 using ApiStudent.Models.Dtos;
+using ApiStudent.Models.Dtos.StudentDto;
 using ApiStudent.Service;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -19,13 +20,13 @@ public class StudentController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> PostStudent([FromBody] CreateStudentDto studentDto)
     {
-        await _studentService.AdicionarStudent(studentDto);
+        await _studentService.AdicionarStudentAsync(studentDto);
         return CreatedAtAction(nameof(ReadStudentPorId), new { Email = studentDto.Email}, studentDto);
     }
     [HttpGet("{email}")]
     public async Task<IActionResult> ReadStudentPorId(string email)
     {
-        var studentDto = await _studentService.RetornarStudent(email);
+        var studentDto = await _studentService.RetornarStudentAsync(email);
         if(studentDto == null)
         {
             return NotFound();
@@ -35,6 +36,6 @@ public class StudentController : ControllerBase
     [HttpGet]
     public async Task<IEnumerable<ReadStudentDto>> ReadStudents()
     {
-        return await _studentService.RetornarStudents();
+        return await _studentService.RetornarStudentsAsync();
     }
 }
