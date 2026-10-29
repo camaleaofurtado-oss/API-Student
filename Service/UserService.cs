@@ -12,13 +12,15 @@ public class UserService
     IMapper _mapper;
     UserManager<User> _userManager;
     SignInManager<User> _signManager;
+    RoleManager<IdentityRole> _roleManager;
     TokenService _tokenService;
-    public UserService(IMapper mapper, UserManager<User> userManager, SignInManager<User> signManager, TokenService tokenService)
+    public UserService(IMapper mapper, UserManager<User> userManager, SignInManager<User> signManager, TokenService tokenService, RoleManager<IdentityRole> roleManager)
     {
         _mapper = mapper;
         _userManager = userManager;
         _signManager = signManager;
         _tokenService = tokenService;
+        _roleManager = roleManager;
     }
 
 
@@ -57,6 +59,20 @@ public class UserService
         return new AuthResponseDto(true, "Login realizado com sucesso", token);
         
         
+    }
+    public async Task AdicionaUserRoleAsync(AddUserRoleDto dto)
+    {
+        var user = await _userManager.FindByIdAsync(dto.UserId);
+        if (user == null) throw new ApplicationException("Usuario não existe!");
+
+        var roles = await _roleManager.Roles.Select(r=> r.Name).ToListAsync();
+        
+        foreach(var role in dto.Roles)
+        {
+            if(!roles.Contains(role)) throw new ApplicationException("Role não existe!");
+        }
+        await _userManager.AddToRolesAsync(user, dto.Roles);
+
     }
 
 }
