@@ -59,6 +59,29 @@ namespace ApiStudent.Migrations
                     b.ToTable("Enrollments");
                 });
 
+            modelBuilder.Entity("ApiStudent.Models.Instructor", b =>
+                {
+                    b.Property<string>("Email")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Email");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Instructors");
+                });
+
             modelBuilder.Entity("ApiStudent.Models.Student", b =>
                 {
                     b.Property<string>("Email")
@@ -67,15 +90,12 @@ namespace ApiStudent.Migrations
                     b.Property<DateTime>("DataCadastro")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime>("DataNascimento")
-                        .HasColumnType("datetime(6)");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<float>("Pontuacao")
-                        .HasColumnType("float");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -297,6 +317,17 @@ namespace ApiStudent.Migrations
                     b.Navigation("Course");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("ApiStudent.Models.Instructor", b =>
+                {
+                    b.HasOne("ApiStudent.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ApiStudent.Models.Student", b =>

@@ -3,6 +3,7 @@ using ApiStudent.Models.Dtos.UserDto;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 
 namespace ApiStudent.Service;
@@ -38,14 +39,28 @@ public class UserService
     public async Task<ReadUserDto> LerUserPorIdAsync(string id)
     {
         var user = await _userManager.FindByIdAsync(id);
+
+        if (user == null) throw new ApplicationException("Usuario não encontrado");
+
         var userDto = _mapper.Map<ReadUserDto>(user);
-        return userDto;
+        var roles = await _userManager.GetRolesAsync(user);
+
+        return userDto with { Roles = roles.ToList() };
 
     }
     public async Task<IEnumerable<ReadUserDto>> retornarUsuariosAsync()
     {
-        return _mapper.Map<List<ReadUserDto>>(await _userManager.Users.ToListAsync());
-        
+        var users = await _userManager.Users.ToListAsync();
+
+        var userDtos = new List<ReadUserDto>();
+        foreach (var u in users)
+        {
+            var roles = await _userManager.GetRolesAsync(u);
+            var userDto = _mapper.Map<ReadUserDto>(u);
+            userDtos.Add(userDto with { Roles = roles.ToList() });
+        }
+
+        return userDtos;
     }
     public async Task<AuthResponseDto> Login(LoginUserDto loginDto)
     {

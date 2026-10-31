@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Net.NetworkInformation;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<StudentService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthentication(opts =>
 {
@@ -39,6 +41,28 @@ builder.Services.AddAuthentication(opts =>
         ValidateAudience = false,
         ClockSkew = TimeSpan.Zero
     };
+}
+);
+builder.Services.AddAuthorization(opts =>
+{
+    opts.AddPolicy("IsStudent", policy =>
+         policy.RequireAssertion(context =>
+            context.User.HasClaim("UserType", "Student") ||
+            context.User.IsInRole("Admin") ||
+            context.User.IsInRole("SuperAdmin")
+         ));
+    opts.AddPolicy("IsInstructor", policy =>
+         policy.RequireAssertion(context =>
+            context.User.HasClaim("UserType", "Instructor") ||
+            context.User.IsInRole("Admin") || 
+            context.User.IsInRole("SuperAdmin")
+         ));
+    opts.AddPolicy("AdminOnly", policy =>
+        policy.RequireAssertion(context =>
+        context.User.IsInRole("Admin") ||
+        context.User.IsInRole("SuperAdmin")
+
+    ));
 }
 );
   

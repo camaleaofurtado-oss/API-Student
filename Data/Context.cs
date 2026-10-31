@@ -19,13 +19,15 @@ public class Context : IdentityDbContext<User>
 
         builder.Entity<Student>().HasMany(s => s.Enrollments).WithOne(e => e.Student).OnDelete(DeleteBehavior.Restrict);
         builder.Entity<Course>().HasMany(c => c.Enrollments).WithOne(e => e.Course).OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<Student>().HasQueryFilter(s => !s.IsDeleted);
                 
-            
     }
 
     public DbSet<Course> Courses { get; set; }
     public DbSet<Student> Students { get; set; }
     public DbSet<Enrollment> Enrollments { get; set; }
+    public DbSet<Instructor> Instructors { get; set; }
 
 
 }
