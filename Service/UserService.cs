@@ -31,8 +31,8 @@ public class UserService
         var resultado = await _userManager.CreateAsync(user, userDto.Password);
         if (!resultado.Succeeded)
         {
-            throw new ApplicationException($"Falha ao cadastrar");
-
+            var erros = string.Join("; ", resultado.Errors.Select(e => e.Description));
+            throw new ApplicationException($"Falha ao cadastrar usuario: {erros}");
         }
         return user;
     }
@@ -62,7 +62,7 @@ public class UserService
 
         return userDtos;
     }
-    public async Task<AuthResponseDto> Login(LoginUserDto loginDto)
+    public async Task<AuthResponseDto> LoginAsync(LoginUserDto loginDto)
     {
         var user = await _userManager.FindByEmailAsync(loginDto.Email);
         if (user == null) return new AuthResponseDto( false, "Email ou senha invalidos");

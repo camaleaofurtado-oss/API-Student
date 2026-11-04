@@ -21,6 +21,7 @@ public class Context : IdentityDbContext<User>
         builder.Entity<Course>().HasMany(c => c.Enrollments).WithOne(e => e.Course).OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<Student>().HasQueryFilter(s => !s.IsDeleted);
+        builder.Entity<Course>().Property(p => p.Categoria).HasConversion<string>();
                 
     }
 

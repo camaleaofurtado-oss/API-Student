@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ApiStudent.Models.Enum;
+using System.ComponentModel.DataAnnotations;
 
 namespace ApiStudent.Models;
 
@@ -10,11 +11,11 @@ public class Course
     [Required]
     public string Descricao { get; set; }
     [Required]
-    public string Categoria { get; set; }
+    public CategoriaCurso Categoria { get; set; }
     [Required]
     public int CargaHoraria { get; set; }
     [Required]
-    public DateTime DataCriacacao { get; set; }
+    public DateTime DataCriacao { get; set; } = DateTime.UtcNow;
     public virtual ICollection<Enrollment> Enrollments { get; set; }
 
 }

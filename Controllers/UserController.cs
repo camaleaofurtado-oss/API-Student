@@ -8,7 +8,6 @@ namespace ApiStudent.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[Authorize(Roles ="SuperAdmin")]
 public class UserController : ControllerBase
 {
     UserService _userService;
@@ -18,13 +17,13 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("Cadastra")]
-    [AllowAnonymous]
     public async Task<IActionResult> PostUser([FromBody] CreateUserDto userDto)
     {
         var user = await _userService.CadastraAsync(userDto);
         return CreatedAtAction(nameof(ReadUserPorId), new { user.Id }, user);
     }
     [HttpPost("Role")]
+    [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> PostRoleEmUser([FromBody] AddUserRoleDto dto)
     {
         await _userService.AdicionaUserRoleAsync(dto);
@@ -33,6 +32,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> ReadUserPorId(string id)
     {
         var userDto = await _userService.LerUserPorIdAsync(id);
@@ -43,16 +43,16 @@ public class UserController : ControllerBase
         return Ok(userDto);
     }
     [HttpGet]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<IEnumerable<ReadUserDto>>ReadUsers()
     {
         return await _userService.retornarUsuariosAsync();
 
     }
     [HttpPost("Login")]
-    [AllowAnonymous]
    public async Task<IActionResult> Login([FromBody]LoginUserDto loginDto)
    {
-        var responseDto = await _userService.Login(loginDto);
+        var responseDto = await _userService.LoginAsync(loginDto);
         if(!responseDto.Success)
         {
             return BadRequest(new {Message = responseDto.Message});

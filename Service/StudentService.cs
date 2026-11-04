@@ -25,7 +25,7 @@ public class StudentService
         _userManager = userManager;
         _httpContextAcessor = httpContext;
     }
-    public async Task AdicionarStudentAsync(CreateStudentDto studentDto)
+    public async Task<Student> AdicionarStudentAsync(CreateStudentDto studentDto)
     {
         var student = await _context.Students.IgnoreQueryFilters().FirstOrDefaultAsync(s => s.Email == studentDto.Email);
         if (student != null)
@@ -33,7 +33,7 @@ public class StudentService
             student.IsDeleted = false;
             await _context.SaveChangesAsync();
 
-            return;
+            return student;
         }
 
         var user = await _userManager.FindByEmailAsync(studentDto.Email);
@@ -47,6 +47,7 @@ public class StudentService
 
         await _context.AddAsync(student);
         await _context.SaveChangesAsync();
+        return student;
     }
     public async Task<ReadStudentDto> RetornarStudentAsync(string email)
     {
@@ -54,9 +55,6 @@ public class StudentService
         var emailClaim = userClaim!.FindFirst(ClaimTypes.Email)?.Value;
         bool isAdmin = userClaim.IsInRole("SuperAdmin") || userClaim.IsInRole("Admin");
         Student? student;
-
-      
-
         if(!isAdmin && emailClaim != email)
         {
             throw new ApplicationException("Email passado pelo endpoint diferente do email do estudante");

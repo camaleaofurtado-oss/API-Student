@@ -1,4 +1,4 @@
-﻿using ApiStudent.Data;
+﻿    using ApiStudent.Data;
 using ApiStudent.Models;
 using ApiStudent.Models.Dtos;
 using ApiStudent.Models.Dtos.StudentDto;
@@ -13,7 +13,6 @@ namespace ApiStudent.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[Authorize(Policy ="AdminOnly")]
 public class StudentController : ControllerBase
 {
     StudentService _studentService;
@@ -22,14 +21,14 @@ public class StudentController : ControllerBase
         _studentService = service;
     }
     [HttpPost]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> PostStudent([FromBody] CreateStudentDto studentDto)
     {
-        await _studentService.AdicionarStudentAsync(studentDto);
-        return CreatedAtAction(nameof(ReadStudentPorId), new { Email = studentDto.Email}, studentDto);
+        var student = await _studentService.AdicionarStudentAsync(studentDto);
+        return CreatedAtAction(nameof(ReadStudentPorId), new { Email = student!.Email}, student);
     }
     [HttpGet("{email}")]
     [Authorize(Policy = "IsStudent")]
-    [AllowAnonymous]
     public async Task<IActionResult> ReadStudentPorId(string email)
     {
         var studentDto = await _studentService.RetornarStudentAsync(email);
@@ -40,11 +39,13 @@ public class StudentController : ControllerBase
         return Ok(studentDto);
     }
     [HttpGet]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<IEnumerable<ReadStudentDto>> ReadStudents()
     {
         return await _studentService.RetornarStudentsAsync();
     }
     [HttpPut("{email}")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> PutStudent(string email, [FromBody] UpdateStudentDto studentDto)
     {
         string mensagem = await _studentService.AtualizarStudentAsync(email, studentDto);
@@ -52,6 +53,7 @@ public class StudentController : ControllerBase
         return Ok(mensagem);
     }
     [HttpDelete("{email}")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> DeleteStudent(string email)
     {
         bool studentRemovido = await _studentService.RemoverStudentAsync(email);
