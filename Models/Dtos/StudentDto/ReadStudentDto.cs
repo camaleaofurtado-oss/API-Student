@@ -1,9 +1,12 @@
-﻿namespace ApiStudent.Models.Dtos;
+﻿using ApiStudent.Models.Dtos.EnrollmentDto;
+
+namespace ApiStudent.Models.Dtos;
 
 public record ReadStudentDto(
     
   string Email,
   string Nome, 
-  string DataCadastro
+  string DataCadastro,
+  ICollection<ReadEnrollmentDto> Enrollments
 );
 

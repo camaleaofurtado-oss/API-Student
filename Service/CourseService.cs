@@ -17,8 +17,14 @@ public class CourseService
         _mapper = mapper;
         _context = context;
     }
-    public async Task<Course> CriarCourseAsync(CreateCourseDto courseDto)
+    public async Task<Course?> CriarCourseAsync(CreateCourseDto courseDto)
     {
+       int valorCategoria=(int)courseDto.Categoria;
+        if (validaEnum(valorCategoria))
+        {
+            return null;
+        }
+
         var course = _mapper.Map<Course>(courseDto);
         await _context.AddAsync(course);
         await _context.SaveChangesAsync();
@@ -56,5 +62,35 @@ public class CourseService
         }
         var listaAsync = await query.ToListAsync();
         return _mapper.Map<List<ReadCourseDto>>(listaAsync);
+    }
+    public async Task<int?> AtualizaCourseAsync(int id, UpdateCourseDto courseDto)
+    {
+        int valorCategoria = (int)courseDto.Categoria;
+        if (validaEnum(valorCategoria))
+        {
+            throw new ArgumentException("A categoria informada é inválida.");
+        }
+        var course =await _context.Courses.FirstOrDefaultAsync(c => c.Id == id);
+        if(course == null)
+        {
+            throw new KeyNotFoundException("Curso não encontrado.");
+        }
+        _mapper.Map(courseDto, course);
+        await _context.SaveChangesAsync();
+        return course.Id;
+    }
+    public async Task<int?> DeletarCourseAsync(int id)
+    {
+        var course = await _context.Courses.FirstOrDefaultAsync(c=> c.Id == id);
+        if (course is null) return null;
+        _context.Courses.Remove(course);
+        await _context.SaveChangesAsync();
+        return course.Id;
+    }
+
+    public bool validaEnum(int valorCategoriaDto )
+    {
+        int totalValues = Enum.GetValues(typeof(CategoriaCurso)).Length;
+        return valorCategoriaDto >= totalValues || valorCategoriaDto < 0;
     }
 }

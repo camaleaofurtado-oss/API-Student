@@ -1,4 +1,4 @@
-﻿    using ApiStudent.Data;
+﻿        using ApiStudent.Data;
 using ApiStudent.Models;
 using ApiStudent.Models.Dtos;
 using ApiStudent.Models.Dtos.StudentDto;

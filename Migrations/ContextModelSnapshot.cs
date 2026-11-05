@@ -54,13 +54,13 @@ namespace ApiStudent.Migrations
 
             modelBuilder.Entity("ApiStudent.Models.Enrollment", b =>
                 {
-                    b.Property<string>("StudentId")
+                    b.Property<string>("StudentEmail")
                         .HasColumnType("varchar(255)");
 
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
-                    b.HasKey("StudentId", "CourseId");
+                    b.HasKey("StudentEmail", "CourseId");
 
                     b.HasIndex("CourseId");
 
@@ -322,7 +322,7 @@ namespace ApiStudent.Migrations
 
                     b.HasOne("ApiStudent.Models.Student", "Student")
                         .WithMany("Enrollments")
-                        .HasForeignKey("StudentId")
+                        .HasForeignKey("StudentEmail")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ApiStudent.Models.Dtos.EnrollmentDto;
+using System.ComponentModel.DataAnnotations;
 
 namespace ApiStudent.Models.Dtos.CourseDto;
 
@@ -8,5 +9,6 @@ public record ReadCourseDto
      string Descricao,
      string Categoria,
      int cargaHoraria,
-     DateTime DataCriacao
+     DateTime DataCriacao,
+     ICollection<ReadEnrollmentDto> Enrollments
 );

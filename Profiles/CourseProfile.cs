@@ -10,7 +10,9 @@ public class CourseProfile: Profile
     public CourseProfile()
     {
         CreateMap<CreateCourseDto, Course>();
-        CreateMap<Course, ReadCourseDto>().ForMember(courseDto=> courseDto.Categoria, opt => opt.MapFrom(course=> course.Categoria.ToString()));
+        CreateMap<Course, ReadCourseDto>().ForMember(courseDto=> courseDto.Categoria, opt => opt.MapFrom(course=> course.Categoria.ToString())).
+                                           ForMember(courseDto=> courseDto.Enrollments, opt=> opt.MapFrom(course=> course.Enrollments));
+        CreateMap<UpdateCourseDto, Course>();
 
     }
 }

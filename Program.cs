@@ -43,7 +43,10 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+}); ;
 
 var connString = builder.Configuration.GetConnectionString("Connection");
 builder.Services.AddDbContext<Context>(opts => opts.UseLazyLoadingProxies().UseMySql(connString, ServerVersion.AutoDetect(connString)));
@@ -54,6 +57,7 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<InstructorService>();
 builder.Services.AddScoped<CourseService>();
+builder.Services.AddScoped<EnrollmentService>();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthentication(opts =>

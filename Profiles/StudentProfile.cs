@@ -10,7 +10,7 @@ public class StudentProfile : Profile
     public StudentProfile()
     {
         CreateMap<CreateStudentDto, Student>();
-        CreateMap<Student, ReadStudentDto>();
+        CreateMap<Student, ReadStudentDto>().ForMember(studentDto=> studentDto.Enrollments, opt=> opt.MapFrom(student=> student.Enrollments));
         CreateMap<UpdateStudentDto, Student>();
         
     }

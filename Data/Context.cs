@@ -13,12 +13,9 @@ public class Context : IdentityDbContext<User>
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<Enrollment>().HasKey(e => new { e.StudentId, e.CourseId });
-        builder.Entity<Enrollment>().HasOne(e => e.Student).WithMany(s => s.Enrollments).HasForeignKey(e => e.StudentId);
-        builder.Entity<Enrollment>().HasOne(e => e.Course).WithMany(c => c.Enrollments).HasForeignKey(e => e.CourseId);
-
-        builder.Entity<Student>().HasMany(s => s.Enrollments).WithOne(e => e.Student).OnDelete(DeleteBehavior.Restrict);
-        builder.Entity<Course>().HasMany(c => c.Enrollments).WithOne(e => e.Course).OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<Enrollment>().HasKey(e => new { e.StudentEmail, e.CourseId });
+        builder.Entity<Student>().HasMany(s => s.Enrollments).WithOne(e => e.Student).HasForeignKey(e => e.StudentEmail).OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<Course>().HasMany(c => c.Enrollments).WithOne(e => e.Course).HasForeignKey(e => e.CourseId).OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<Student>().HasQueryFilter(s => !s.IsDeleted);
         builder.Entity<Course>().Property(p => p.Categoria).HasConversion<string>();

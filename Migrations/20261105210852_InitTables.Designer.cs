@@ -3,6 +3,7 @@ using System;
 using ApiStudent.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -11,21 +12,29 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiStudent.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20261028051530_Login")]
-    partial class Login
+    [Migration("20261105210852_InitTables")]
+    partial class InitTables
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.10")
+                .HasAnnotation("ProductVersion", "8.0.2")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
             modelBuilder.Entity("ApiStudent.Models.Course", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CargaHoraria")
                         .HasColumnType("int");
@@ -34,7 +43,7 @@ namespace ApiStudent.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<DateTime>("DataCriacacao")
+                    b.Property<DateTime>("DataCriacao")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Descricao")
@@ -48,17 +57,40 @@ namespace ApiStudent.Migrations
 
             modelBuilder.Entity("ApiStudent.Models.Enrollment", b =>
                 {
-                    b.Property<string>("StudentId")
+                    b.Property<string>("StudentEmail")
                         .HasColumnType("varchar(255)");
 
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
-                    b.HasKey("StudentId", "CourseId");
+                    b.HasKey("StudentEmail", "CourseId");
 
                     b.HasIndex("CourseId");
 
                     b.ToTable("Enrollments");
+                });
+
+            modelBuilder.Entity("ApiStudent.Models.Instructor", b =>
+                {
+                    b.Property<string>("Email")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Email");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Instructors");
                 });
 
             modelBuilder.Entity("ApiStudent.Models.Student", b =>
@@ -69,15 +101,12 @@ namespace ApiStudent.Migrations
                     b.Property<DateTime>("DataCadastro")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime>("DataNascimento")
-                        .HasColumnType("datetime(6)");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<float>("Pontuacao")
-                        .HasColumnType("float");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -186,6 +215,8 @@ namespace ApiStudent.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<string>("ClaimType")
                         .HasColumnType("longtext");
 
@@ -208,6 +239,8 @@ namespace ApiStudent.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("longtext");
@@ -292,13 +325,24 @@ namespace ApiStudent.Migrations
 
                     b.HasOne("ApiStudent.Models.Student", "Student")
                         .WithMany("Enrollments")
-                        .HasForeignKey("StudentId")
+                        .HasForeignKey("StudentEmail")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Course");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("ApiStudent.Models.Instructor", b =>
+                {
+                    b.HasOne("ApiStudent.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ApiStudent.Models.Student", b =>

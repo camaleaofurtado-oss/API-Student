@@ -25,6 +25,11 @@ public class CourseController : ControllerBase
     public async Task<IActionResult> PostCourse([FromBody] CreateCourseDto courseDto)
     {
         var course = await _courseService.CriarCourseAsync(courseDto);
+        if(course == null)
+        {
+            return BadRequest();
+        }
+
         return CreatedAtAction(nameof(ReadCoursePorId), new { Id = course.Id }, course);
 
     }
@@ -40,6 +45,34 @@ public class CourseController : ControllerBase
     {
         return await _courseService.RetornarCoursesAsync(categoria,cargaMinima,dataMinima);
     }
+    [HttpPut("{id}")]
+    [Authorize(Policy = "IsInstructor")]
+    public async Task<IActionResult> PutCourse(int id, [FromBody] UpdateCourseDto courseDto)
+    {
+        try
+        {
+            var courseId = await _courseService.AtualizaCourseAsync(id, courseDto);
+            return Ok($"Curso com Id {courseId} atualizado com sucesso!");
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message); 
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message); 
+        }
+    }
+    [HttpDelete("{id}")]
+    [Authorize(Policy = "AdminOnly")]
+    public async Task<IActionResult>DeleteCourse(int id)
+    {
+        var courseId = await _courseService.DeletarCourseAsync(id);
+        if (courseId == null) return NotFound();
+        return NoContent();
+
+    }
+
     
 
 }
