@@ -10,8 +10,8 @@ namespace ApiStudent.Service;
 
 public class CourseService
 {
-    IMapper _mapper;
-    Context _context;
+    private readonly IMapper _mapper;
+    private readonly Context _context;
     public CourseService( Context context, IMapper mapper)
     {
         _mapper = mapper;

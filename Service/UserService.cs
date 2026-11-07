@@ -10,11 +10,11 @@ namespace ApiStudent.Service;
 
 public class UserService
 {
-    IMapper _mapper;
-    UserManager<User> _userManager;
-    SignInManager<User> _signManager;
-    RoleManager<IdentityRole> _roleManager;
-    TokenService _tokenService;
+    private readonly IMapper _mapper;
+    private readonly UserManager<User> _userManager;
+    private readonly SignInManager<User> _signManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly TokenService _tokenService;
     public UserService(IMapper mapper, UserManager<User> userManager, SignInManager<User> signManager, TokenService tokenService, RoleManager<IdentityRole> roleManager)
     {
         _mapper = mapper;

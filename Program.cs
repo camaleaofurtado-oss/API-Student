@@ -2,10 +2,12 @@ using ApiStudent.Data;
 using ApiStudent.Models;
 using ApiStudent.Models.Dtos.UserDto;
 using ApiStudent.Service;
+using ApiStudent.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Net.NetworkInformation;
 using System.Text;
 
@@ -16,39 +18,66 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    // Define a descrição do esquema de segurança (JWT Bearer)
-    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Name = "Authorization",
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Description = "Insira o token JWT no campo abaixo.\n\nExemplo: eyJhbGciOiJIUzI1Ni..."
+        Title = "ApiStudent",
+        Version = "v1",
+        Description = """
+            Gestão de usuários, alunos, instrutores, cursos e matrículas.
+
+            ## Como autorizar
+            1. Chame POST /User/Login. O SuperAdmin da aplicação é superAdmin@email.com / SenhaDoAdmin@123.
+            2. Copie só o valor de token (começa com eyJ). Não copie a palavra Bearer.
+            3. Clique em Authorize, cole o token e confirme.
+            O token expira em 10 minutos. POST /User/Cadastra, POST /User/Login, GET /Course e GET /Course/{id} não exigem token.
+
+            ## Ordem sugerida
+            1. Login do SuperAdmin e Authorize.
+            2. POST /User/Cadastra para o aluno (maria.aluno@email.com) e para o instrutor (joao.instrutor@email.com). Senha dos dois: Senha@123.
+            3. GET /User e copie os ids.
+            4. POST /Student e POST /Instructor com esses e-mails.
+            5. POST /Course e anote o id.
+            6. POST /Enrollment.
+            7. Consultas, alterações e exclusões.
+
+            Cada operação abaixo traz o JSON, os parâmetros e quem pode chamar.
+            """
     });
 
-    // Aplica a exigência do token globalmente no Swagger
-    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Cole apenas o JWT retornado por POST /User/Login, sem o prefixo Bearer."
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
-            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            new OpenApiSecurityScheme
             {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                Reference = new OpenApiReference
                 {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
                 }
             },
             Array.Empty<string>()
         }
     });
+
+    options.OperationFilter<SwaggerEndpointDocumentationFilter>();
+    options.SchemaFilter<DtoExampleSchemaFilter>();
 });
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
 }); ;
 
-var connString = builder.Configuration.GetConnectionString("Connection");
+var connString = builder.Configuration["ConnectionStrings:Connection"];
 builder.Services.AddDbContext<Context>(opts => opts.UseLazyLoadingProxies().UseMySql(connString, ServerVersion.AutoDetect(connString)));
 builder.Services.AddIdentity<User, IdentityRole>(opts=> opts.User.RequireUniqueEmail = true).AddEntityFrameworkStores<Context>().AddDefaultTokenProviders();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -70,7 +99,7 @@ builder.Services.AddAuthentication(opts =>
     opts.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(("sua-chave-gigante-com-mais-de-trinta-e-dois-caracteres"))),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["SymmetricSecurityKey"]!)),
         ValidateIssuer = false,
         ValidateAudience = false,
         ClockSkew = TimeSpan.Zero

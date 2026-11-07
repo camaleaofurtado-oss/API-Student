@@ -9,7 +9,7 @@ namespace ApiStudent.Controllers;
 [Route("[controller]")]
 public class EnrollmentController : ControllerBase
 {
-    EnrollmentService _enrollmentService;
+    private readonly EnrollmentService _enrollmentService;
     public EnrollmentController(EnrollmentService enrollmentService)
     {
         _enrollmentService = enrollmentService;

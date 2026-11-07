@@ -9,9 +9,9 @@ namespace ApiStudent.Service;
 
 public class InstructorService
 {
-    UserManager<User> _userManager;
-    Context _context;
-    IMapper _mapper;
+    private readonly UserManager<User> _userManager;
+    private readonly Context _context;
+    private readonly IMapper _mapper;
 
     public InstructorService(UserManager<User> userManager, Context context, IMapper mapper)
     {

@@ -11,13 +11,15 @@ namespace ApiStudent.Service;
 
 public class TokenService
 {
-    UserManager<User> _userManager;
-    Context _context;
+    private readonly UserManager<User> _userManager;
+    private readonly Context _context;
+    private readonly IConfiguration _configuration;
 
-    public TokenService(UserManager<User> userManager, Context context)
+    public TokenService(UserManager<User> userManager, Context context, IConfiguration configuration)
     {
         _userManager = userManager;
         _context = context;
+        _configuration = configuration;
     }
 
     public async Task<string> GenerateTokenAsync(User user)
@@ -44,7 +46,7 @@ public class TokenService
             claims.Add(new Claim("UserType", "Instructor"));
         }
 
-        var chave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(("sua-chave-gigante-com-mais-de-trinta-e-dois-caracteres")));
+        var chave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["SymmetricSecurityKey"]!));
 
         var signCredentials = new SigningCredentials(chave, SecurityAlgorithms.HmacSha256);
 

@@ -10,7 +10,7 @@ namespace ApiStudent.Controllers;
 [Route("[controller]")]
 public class UserController : ControllerBase
 {
-    UserService _userService;
+    private readonly UserService _userService;
     public UserController(UserService userService)
     {
         _userService = userService;

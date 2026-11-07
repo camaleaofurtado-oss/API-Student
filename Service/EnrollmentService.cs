@@ -9,9 +9,9 @@ namespace ApiStudent.Service;
 
 public class EnrollmentService
 {
-    IMapper _mapper;
-    Context _context;
-    IHttpContextAccessor _httpContextAcessor;
+    private readonly IMapper _mapper;
+    private readonly Context _context;
+    private readonly IHttpContextAccessor _httpContextAcessor;
     public EnrollmentService(IMapper mapper, Context context, IHttpContextAccessor httpContextAcessor)
     {
         _mapper = mapper;

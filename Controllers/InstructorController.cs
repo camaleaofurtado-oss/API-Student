@@ -12,7 +12,7 @@ namespace ApiStudent.Controllers;
 [Authorize(Policy = "AdminOnly")]
 public class InstructorController : ControllerBase
 {
-    InstructorService _instructorService;
+    private readonly InstructorService _instructorService;
     public InstructorController(InstructorService instructorService)
     {
         _instructorService = instructorService;

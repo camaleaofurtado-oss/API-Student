@@ -14,10 +14,10 @@ namespace ApiStudent.Service;
 
 public class StudentService
 {
-    IMapper _mapper;
-    Context _context;
-    UserManager<User> _userManager;
-    IHttpContextAccessor _httpContextAcessor;
+    private readonly IMapper _mapper;
+    private readonly Context _context;
+    private readonly UserManager<User> _userManager;
+    private readonly IHttpContextAccessor _httpContextAcessor;
     public StudentService(IMapper mapper, Context context, UserManager<User> userManager, IHttpContextAccessor httpContext)
     {
         _mapper = mapper;
